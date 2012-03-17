@@ -4,15 +4,7 @@
  */
 package asteroidstheultimateadventure;
 
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Image;
-import java.awt.Point;
-import java.awt.Polygon;
-import java.awt.Toolkit;
+import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.geom.AffineTransform;
@@ -77,8 +69,9 @@ public class Painter extends JComponent implements KeyListener
     private MiniShip miniShip2;
     Image explosionImage;
     AffineTransform t = new AffineTransform();
-    Font f = new Font("Copperplate", Font.BOLD, 48);
-    Font f2 = new Font("Paskowy", Font.BOLD, 48);
+    Font f = new Font("Arial", Font.BOLD, 24);
+    Font f2 = new Font("Arial", Font.BOLD, 24);
+    Image backgroundImage;
 
     @Override
     public void paintComponent(Graphics g)
@@ -86,8 +79,7 @@ public class Painter extends JComponent implements KeyListener
         g2 = (Graphics2D) g;
         g2.setColor(Color.black);
         g2.fillRect(0, 0, width, height);//rectangle as big as screen
-
-
+        g2.drawImage(backgroundImage, null, this);
         g2.setTransform(t);
         g2.translate(width - 300, 300);
         g2.setColor(Color.ORANGE);//color for solar flare
@@ -107,11 +99,11 @@ public class Painter extends JComponent implements KeyListener
         ship.paintSelf(g2);
         miniShip.paintSelf(g2);
         miniShip2.paintSelf(g2);
-        if (!miniShip.miniShipAlive)
+        if (!miniShip.isMiniShipAlive())
         {
             drawExplosion(miniShip.getMiniShipX(), miniShip.getMiniShipY());
         }
-        if (!miniShip2.miniShipAlive)
+        if (!miniShip2.isMiniShipAlive())
         {
             drawExplosion(miniShip2.getMiniShipX(), miniShip2.getMiniShipY());
         }
@@ -191,6 +183,11 @@ public class Painter extends JComponent implements KeyListener
     public void setExplosionImage(Image explosionImage)
     {
         this.explosionImage = explosionImage;
+    }
+
+    public void setbackgroundImage(Image backgroundImage)
+    {
+        this.backgroundImage = backgroundImage;
     }
 
     public void setShip(Ship aship)

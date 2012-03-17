@@ -60,7 +60,7 @@ public class Asteroid implements ActionListener
             newColor = Color.DARK_GRAY;
         }
         g2.setTransform(identityTransform);
-        g2.setFont(new Font("Paskowy", Font.BOLD, 35));
+//        g2.setFont(new Font("Paskowy", Font.BOLD, 35));
         g2.setColor(Color.green);
         g2.drawString("00000" + asteroidNumber, asteroidXposition, asteroidYposition);
         g2.setColor(newColor);

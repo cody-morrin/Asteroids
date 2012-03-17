@@ -24,7 +24,7 @@ public class MiniShip
     int xToMove = 0;
     int yToMove = 0;
     private int kills = 0;
-    boolean miniShipAlive = true;
+    public boolean miniShipAlive = true;
     public int[] miniShipXPoints =
     {
         2, 2, 8, 8, 2, 2, -2, -2, -8, -8, -2, -2
@@ -66,7 +66,7 @@ public class MiniShip
 
     public void paintSelf(Graphics2D g2)
     {
-        if (miniShipAlive)
+        if (isMiniShipAlive())
         {
             miniShipArea = new Area(miniShipShape);
             laserRangeArea = new Area(laserRangeShape);
@@ -103,7 +103,7 @@ public class MiniShip
 
     public void setMiniShipX(int miniShipX)
     {
-        if (miniShipAlive)
+        if (isMiniShipAlive())
         {
             this.miniShipX = miniShipX;
         }
@@ -116,7 +116,7 @@ public class MiniShip
 
     public void setMiniShipY(int miniShipY)
     {
-        if (miniShipAlive)
+        if (isMiniShipAlive())
         {
             this.miniShipY = miniShipY;
         }
@@ -180,5 +180,13 @@ public class MiniShip
     public Area getLaserRangeArea()
     {
         return laserRangeArea;
+    }
+
+    /**
+     * @return the miniShipAlive
+     */
+    public boolean isMiniShipAlive()
+    {
+        return miniShipAlive;
     }
 }

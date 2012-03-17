@@ -39,7 +39,7 @@ public class SpacE implements KeyListener
 
     public void makeSpace()
     {
-        JFrame playingField = new JFrame("Asteroid Ship");
+        JFrame playingField = new JFrame("Asteroid Sweeper");
         playingField.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         playingField.setSize(width, height);
         playingField.setVisible(true);

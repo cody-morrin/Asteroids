@@ -1,4 +1,4 @@
-//Copyright © Cody Morrin 2010
+//Copyright © Cody Morrin 2010-2012
 package asteroidstheultimateadventure;
 
 import java.applet.Applet;
@@ -16,12 +16,12 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.Timer;
 
 public class Main implements ActionListener
 {
-    //Ship: -1,1   3,0  3, -1
-
     AffineTransform identity = new AffineTransform();
     private int asteroidNum = 0;
     public SpacE space;
@@ -52,6 +52,9 @@ public class Main implements ActionListener
     boolean minishipAsteroidCollision = false;
     private double miniShipMovementSpeed = 3.9;
     AffineTransform asteroidAffineTransform;
+    URL backgroundAddress = this.getClass().getResource("space.png");
+    Image backgroundImage;
+    static boolean canStart = false;
 
     public static void main(String[] args)
     {
@@ -60,6 +63,7 @@ public class Main implements ActionListener
 
     private void getGoing()
     {
+        JOptionPane.showMessageDialog(null, "Use awrow keys to control the pink ship. Use WASD to control the blue ship.\nMove the green triangle over an asteroid to destroy it.\nType any number, then press enter to destroy the corresponding asteroid.", "Asteroid Game", JOptionPane.PLAIN_MESSAGE);
         main = new Main();
         star = new StarS();
         painter = new Painter();
@@ -69,7 +73,7 @@ public class Main implements ActionListener
         miniShipList.add(miniShip);
         miniShipList.add(miniShip2);
         asteroid = new Asteroid();
-        addAsteroidTimer = new Timer(2000, this);//this is supposed to be 400
+        addAsteroidTimer = new Timer(250, this);
         addAsteroidTimer.start();
         asteroid.setAsteroidList(asteroidList);
         space = new SpacE();
@@ -85,6 +89,8 @@ public class Main implements ActionListener
         {
             explosionImage = ImageIO.read(explosionAddress);
             painter.setExplosionImage(explosionImage);
+            backgroundImage = ImageIO.read(backgroundAddress);
+            painter.setbackgroundImage(backgroundImage);
         } catch (IOException ex)
         {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
@@ -179,26 +185,26 @@ public class Main implements ActionListener
 
         if (e.getSource().equals(laserSTimer) && asteroidList.size() > 0)
         {
-//            int astIndex = nearestAsteroid();
-//            Asteroid closestAsteroid = asteroidList.get(astIndex);
-//            LaserS laser = new LaserS(ship.getTurretPosition(), new Point(closestAsteroid.getAsteroidXposition(), closestAsteroid.getAsteroidYposition()));
-//            laserList.add(laser);
+            int astIndex = nearestAsteroid();
+            Asteroid closestAsteroid = asteroidList.get(astIndex);
+            LaserS laser = new LaserS(ship.getTurretPosition(), new Point(closestAsteroid.getAsteroidXposition(), closestAsteroid.getAsteroidYposition()));
+            laserList.add(laser);
             painter.setLaserList(laserList);
-//            if (closestAsteroid.damage == 0)
-//            {
-//
-//                closestAsteroid.setColor(Color.BLUE);
-//
-//
-//                closestAsteroid.damage = 1;
-//            } else
-//            {
-//                asteroidList.remove(closestAsteroid);
-//            }
+            if (closestAsteroid.damage == 0)
+            {
+
+                closestAsteroid.setColor(Color.BLUE);
+
+
+                closestAsteroid.damage = 1;
+            } else
+            {
+                asteroidList.remove(closestAsteroid);
+            }
             painter.setAsteroidList(asteroidList);
-//            laserSound.play();
+            laserSound.play();
         }
-        
+
         if (e.getSource().equals(paintTimer))
         {
             painter.repaint();
@@ -220,30 +226,23 @@ public class Main implements ActionListener
                         minishipAsteroidCollision = true;
                         miniShipList.get(i).miniShipAlive = false;
                     }
-                    //setting area for firing area
-//                    AffineTransform firingAreaAffineTransform = new AffineTransform();
-//                    firingAreaAffineTransform.translate(miniShipList.get(i).getMiniShipX(), miniShipList.get(i).getMiniShipY());
                     Area firingAreaArea = miniShipList.get(i).getLaserRangeArea();
-//                    firingAreaArea.transform(firingAreaAffineTransform);
                     for (int j = 0; j < asteroidList.size(); j++)
                     {
                         Area asteroidArea = asteroidList.get(j).getAsteroidArea();
-                        System.out.println("Asteroid "+asteroidList.get(j).getAsteroidNumber()+" Area X " + asteroidArea.getBounds().x + " Area Y " + asteroidArea.getBounds().y);
-//                        firingAreaAffineTransform.translate(asteroidList.get(j).getAsteroidXposition(), asteroidList.get(j).getAsteroidYposition());
-//                        asteroidArea.transform(firingAreaAffineTransform);
-                        if (intersects(asteroidArea, firingAreaArea))
+                        if (intersects(asteroidArea, firingAreaArea) && miniShipList.get(i).miniShipAlive)
                         {
                             asteroidList.remove(asteroidList.get(j));
+                            miniShipList.get(i).setKills(miniShipList.get(i).getKills() + 1);
                         }
-                        // System.out.println("astlistsize " + asteroidList.size());
                     }
                 }
             }
-            
-            if (!miniShipList.get(0).miniShipAlive && !miniShipList.get(1).miniShipAlive)
+
+            if (!miniShipList.get(0).isMiniShipAlive() && !miniShipList.get(1).isMiniShipAlive())
             {
                 laserSTimer.stop();
-                for (int i = 0; i < 2147483647; i++)
+                for (int i = 0; i < 0; i++)
                 {
                     Integer wasteOfTime = new Integer(55);
                 }
@@ -290,22 +289,6 @@ public class Main implements ActionListener
             if (space.isIsAPressed())
             {
                 miniShip2.setMiniShipAngle(miniShip2.getMiniShipAngle() - 3);
-            }
-            if (space.isIsShiftPressed() && space.shiftPressCount == 1)
-            {
-                boolean shoot = nearestPossibleAsteroidToMiniShip(miniShip2);
-                if (shoot && miniShip2.miniShipAlive)
-                {
-                    int astIndex = nearestAsteroidToMiniShip(miniShip2);
-                    Asteroid closestAsteroid = asteroidList.get(astIndex);
-                    MiniShipLaser laser = new MiniShipLaser(new Point(miniShip2.getMiniShipX(), miniShip2.getMiniShipY()), new Point(closestAsteroid.getAsteroidXposition(), closestAsteroid.getAsteroidYposition()));
-                    miniLaserList.add(laser);
-                    painter.setMiniLaserList(miniLaserList);
-                    asteroidList.remove(closestAsteroid);
-                    painter.setAsteroidList(asteroidList);
-                    laserSound.play();
-                    miniShip2.setKills(miniShip2.getKills() + 1);
-                }
             }
         }
     }
